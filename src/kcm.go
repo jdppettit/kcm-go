@@ -35,7 +35,9 @@ func main() {
 		//name := os.Args[2]
 		fmt.Println("remove")
 	case "activate":
-		//name := os.Args[2]
+		name := os.Args[2]
+		configuration := set_active(config, name)
+		write_config(configuration)
 		fmt.Println("activate")
 	default:
 		fmt.Println("KCM - Kubectl Configuration Manager")
@@ -129,8 +131,30 @@ func add_config(configuration config_container, name string, path string, active
 	return configuration
 }
 
+func is_active_config(config config) string {
+	if config.Active == "true" {
+		return "[*]"
+	}
+	return ""
+}
+
 func list_configs(configuration config_container) {
 	for i := 0; i < len(configuration.Configs); i++ {
-		fmt.Println(configuration.Configs[i].Name + " - " + configuration.Configs[i].Path)
+		fmt.Println(configuration.Configs[i].Name + " - " + configuration.Configs[i].Path + is_active_config(configuration.Configs[i]))
 	}
+}
+
+func set_active(configuration config_container, name string) config_container {
+	for i := 0; i < len(configuration.Configs); i++ {
+		if configuration.Configs[i].Name == name {
+			configuration.Configs[i].Active = "true"
+			break
+		}
+		if configuration.Configs[i].Active == "true" {
+			configuration.Configs[i].Active = "false"
+			break
+		}
+	}
+	fmt.Println(configuration)
+	return configuration
 }
